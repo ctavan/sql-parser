@@ -49,6 +49,11 @@ grammar =
   ]
 
   Table: [
+    o 'TableReference',                                   -> new Field($1)
+    o 'TableReference AS Literal',                        -> new Field($1, $3)
+  ]
+
+  TableReference: [
     o 'Literal',                                          -> new Table($1)
     o 'LEFT_PAREN List RIGHT_PAREN',                      -> $2
     o 'LEFT_PAREN Query RIGHT_PAREN',                     -> new SubSelect($2)
