@@ -122,6 +122,10 @@ exports.Op = class Op
   constructor: (@operation, @left, @right) -> null
   toString: -> "(#{@left} #{@operation.toUpperCase()} #{@right})"
 
+exports.ArrayOp = class ArrayOp
+  constructor: (@operation, @right) -> null
+  toString: -> "#{@operation.toUpperCase()} (#{@right})"
+
 exports.Field = class Field
   constructor: (@field, @name=null) -> null
   toString: -> if @name then "#{@field} AS #{@name}" else @field.toString()

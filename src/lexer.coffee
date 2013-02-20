@@ -18,6 +18,7 @@ class Lexer
                        @dotToken() or
                        @conditionalToken() or
                        @inToken() or
+                       @arrayOperatorToken() or
                        @numberToken() or
                        @stringToken() or
                        @parensToken() or
@@ -81,6 +82,8 @@ class Lexer
     @tokenizeFromList('MATH_MULTI', MATH_MULTI)
   conditionalToken: -> @tokenizeFromList('CONDITIONAL', SQL_CONDITIONALS)
   inToken:          -> @tokenizeFromList('IN', SQL_IN)
+  arrayOperatorToken: ->
+    @tokenizeFromList('ARRAY_OPERATOR', SQL_ARRAY_OPERATORS)
   functionToken:    -> @tokenizeFromList('FUNCTION', SQL_FUNCTIONS)
   sortOrderToken:   -> @tokenizeFromList('DIRECTION', SQL_SORT_ORDERS)
   booleanToken:     -> @tokenizeFromList('BOOLEAN', BOOLEAN)
@@ -121,6 +124,7 @@ class Lexer
   SQL_SORT_ORDERS     = ['ASC', 'DESC']
   SQL_OPERATORS       = ['=', '>', '<', 'LIKE', 'IS NOT', 'IS']
   SQL_IN              = ['IN']
+  SQL_ARRAY_OPERATORS = ['ANY', 'ALL']
   SQL_CONDITIONALS    = ['AND', 'OR']
   BOOLEAN             = ['TRUE', 'FALSE', 'NULL']
   MATH                = ['+', '-']

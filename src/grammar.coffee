@@ -132,6 +132,7 @@ grammar =
     o 'Expression MATH Expression',                       -> new Op($2, $1, $3)
     o 'Expression MATH_MULTI Expression',                 -> new Op($2, $1, $3)
     o 'Expression OPERATOR Expression',                   -> new Op($2, $1, $3)
+    o 'Expression OPERATOR ARRAY_OPERATOR Expression',    -> new Op($2, $1, new ArrayOp($3, $4))
     o 'Expression CONDITIONAL Expression',                -> new Op($2, $1, $3)
     o 'Value IN Table',                                   -> new Op($2, $1, $3)
     o 'Value'
