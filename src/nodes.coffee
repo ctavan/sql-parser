@@ -8,7 +8,10 @@ exports.Select = class Select
       @where = null
       @limit = null
     toString: ->
-      ret = ["SELECT #{@fields.join(', ')}"]
+      select = ["SELECT"]
+      if @distinct == true then select.push "DISTINCT"
+      else if @distinct then select.push "DISTINCT ON (#{@distinct.join(', ')})"
+      ret = ["#{select.join(' ')} #{@fields.join(', ')}"]
       ret.push indent("FROM #{@source}")
       ret.push indent(join.toString()) for join in @joins
       ret.push indent(@where.toString()) if @where
