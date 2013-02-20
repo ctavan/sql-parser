@@ -53,7 +53,7 @@ exports.LiteralValue = class LiteralValue
     else
       @nested = false
       @values = [@value]
-  toString: -> "`#{@values.join('.')}`"
+  toString: -> "#{@values.join('.')}"
 
 exports.StringValue = class StringValue
   constructor: (@value, @quoteType="''") -> null
