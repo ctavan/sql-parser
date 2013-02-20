@@ -703,7 +703,7 @@ if (typeof module !== 'undefined' && require.main === module) {
     }
 
     LiteralValue.prototype.toString = function() {
-      return "`" + (this.values.join('.')) + "`";
+      return "" + (this.values.join('.'));
     };
 
     return LiteralValue;
