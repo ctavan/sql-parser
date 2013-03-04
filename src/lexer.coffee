@@ -74,6 +74,7 @@ class Lexer
     @tokenizeFromWord('ON') or
     @tokenizeFromWord('AS') or
     @tokenizeFromWord('UNION') or
+    @tokenizeFromWord('OVER') or
     @tokenizeFromWord('ALL')
 
   dotToken: -> @tokenizeFromWord('DOT', '.')

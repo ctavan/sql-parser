@@ -180,6 +180,11 @@ grammar =
 
   Function: [
     o "FUNCTION LEFT_PAREN ArgumentList RIGHT_PAREN",     -> new FunctionValue($1, $3)
+    o "Function Over",                                    -> $1.over = $2; $1
+  ]
+
+  Over: [
+    o "OVER LEFT_PAREN ArgumentList RIGHT_PAREN",         -> new FunctionValue($1, $3)
   ]
 
   UserFunction: [
@@ -187,7 +192,8 @@ grammar =
   ]
 
   ArgumentList: [
-    o 'Expression',                                       -> [$1]
+    o '',                                                 -> []
+    o 'Field',                                            -> [$1]
     o 'ArgumentList SEPARATOR Value',                     -> $1.concat($3)
   ]
 
