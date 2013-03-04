@@ -22,6 +22,7 @@ grammar =
 
   SelectQuery: [
     o "SelectWithLimitQuery"
+    o "SelectWithOffsetQuery"
     o "BasicSelectQuery"
   ]
 
@@ -34,6 +35,10 @@ grammar =
 
   SelectWithLimitQuery: [
     o 'SelectQuery LimitClause',                          -> $1.limit = $2; $1
+  ]
+
+  SelectWithOffsetQuery: [
+    o 'SelectQuery OffsetClause',                         -> $1.offset = $2; $1
   ]
 
   Select: [
@@ -97,6 +102,10 @@ grammar =
 
   LimitClause: [
     o 'LIMIT Number',                                     -> new Limit($2)
+  ]
+
+  OffsetClause: [
+    o 'OFFSET Number',                                    -> new Offset($2)
   ]
 
   OrderClause: [

@@ -7,6 +7,7 @@ exports.Select = class Select
       @group = null
       @where = null
       @limit = null
+      @offset = null
     toString: ->
       select = ["SELECT"]
       if @distinct == true then select.push "DISTINCT"
@@ -18,6 +19,7 @@ exports.Select = class Select
       ret.push indent(@group.toString()) if @group
       ret.push indent(@order.toString()) if @order
       ret.push indent(@limit.toString()) if @limit
+      ret.push indent(@offset.toString()) if @offset
       ret.push union.toString() for union in @unions
       ret.join("\n")
 
@@ -93,6 +95,10 @@ exports.OrderArgument = class OrderArgument
 exports.Limit = class Limit
   constructor: (@value) -> null
   toString: -> "LIMIT #{@value}"
+
+exports.Offset = class Offset
+  constructor: (@value) -> null
+  toString: -> "OFFSET #{@value}"
 
 exports.Table = class Table
   constructor: (@name, @win=null, @winFn=null, @winArg=null) -> null

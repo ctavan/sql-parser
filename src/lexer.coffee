@@ -65,6 +65,7 @@ class Lexer
     @tokenizeFromWord('BY') or
     @tokenizeFromWord('HAVING') or
     @tokenizeFromWord('LIMIT') or
+    @tokenizeFromWord('OFFSET') or
     @tokenizeFromWord('JOIN') or
     @tokenizeFromWord('LEFT') or
     @tokenizeFromWord('RIGHT') or
