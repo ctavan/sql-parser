@@ -124,7 +124,7 @@ class Lexer
   SQL_KEYWORDS        = ['SELECT', 'FROM', 'WHERE', 'GROUP BY', 'ORDER BY', 'HAVING', 'AS']
   SQL_FUNCTIONS       = ['AVG', 'COUNT', 'MIN', 'MAX', 'SUM']
   SQL_SORT_ORDERS     = ['ASC', 'DESC']
-  SQL_OPERATORS       = ['=', '>=', '>', '<=', '<', '<>', '!=', 'LIKE', 'IS NOT', 'IS']
+  SQL_OPERATORS       = ['=', '>=', '>', '<=', '<', '<>', '!=', '&&', '||', 'LIKE', 'IS NOT', 'IS']
   SQL_IN              = ['IN', 'NOT IN']
   SQL_ARRAY_OPERATORS = ['ANY', 'ALL']
   SQL_CONDITIONALS    = ['AND', 'OR']
