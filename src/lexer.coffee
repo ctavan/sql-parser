@@ -12,6 +12,7 @@ class Lexer
                        @functionToken() or
                        @windowExtension() or
                        @sortOrderToken() or
+                       @nullsToken() or
                        @seperatorToken() or
                        @operatorToken() or
                        @mathToken() or
@@ -88,6 +89,7 @@ class Lexer
     @tokenizeFromList('ARRAY_OPERATOR', SQL_ARRAY_OPERATORS)
   functionToken:    -> @tokenizeFromList('FUNCTION', SQL_FUNCTIONS)
   sortOrderToken:   -> @tokenizeFromList('DIRECTION', SQL_SORT_ORDERS)
+  nullsToken:       -> @tokenizeFromList('NULLS', SQL_NULLS)
   booleanToken:     -> @tokenizeFromList('BOOLEAN', BOOLEAN)
 
   starToken:        -> @tokenizeFromRegex('STAR', STAR)
@@ -124,6 +126,7 @@ class Lexer
   SQL_KEYWORDS        = ['SELECT', 'FROM', 'WHERE', 'GROUP BY', 'ORDER BY', 'HAVING', 'AS']
   SQL_FUNCTIONS       = ['AVG', 'COUNT', 'MIN', 'MAX', 'SUM']
   SQL_SORT_ORDERS     = ['ASC', 'DESC']
+  SQL_NULLS           = ['NULLS FIRST', 'NULLS LAST']
   SQL_OPERATORS       = ['=', '>=', '>', '<=', '<', '<>', '!=', '&&', '||', 'LIKE', 'IS NOT', 'IS']
   SQL_IN              = ['IN', 'NOT IN']
   SQL_ARRAY_OPERATORS = ['ANY', 'ALL']

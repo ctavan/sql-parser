@@ -120,6 +120,7 @@ grammar =
   OrderArg: [
     o 'Value',                                            -> new OrderArgument($1, 'ASC')
     o 'Value DIRECTION',                                  -> new OrderArgument($1, $2)
+    o 'OrderArg NULLS',                                   -> $1.nulls = $2.replace(/^NULLS /, ''); $1
   ]
 
   GroupClause: [

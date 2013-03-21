@@ -93,8 +93,12 @@ exports.Order = class Order
   toString: -> "ORDER BY #{@orderings.join(', ')}"
 
 exports.OrderArgument = class OrderArgument
-  constructor: (@value, @direction='ASC') -> null
-  toString: -> "#{@value} #{@direction}"
+  constructor: (@value, @direction='ASC', @nulls=null) -> null
+  toString: ->
+    ret = "#{@value} #{@direction}"
+    if @nulls
+      ret += " NULLS #{@nulls}"
+    ret
 
 exports.Limit = class Limit
   constructor: (@value) -> null
