@@ -124,6 +124,14 @@ exports.Group = class Group
     ret.push @having.toString() if @having
     ret.join("\n")
 
+exports.Partition = class Partition
+  constructor: (@fields, @order=null) -> null
+  toString: ->
+    ret = "PARTITION BY #{@fields.join(', ')}"
+    if @order
+      ret += " #{@order}"
+    ret
+
 exports.Where = class Where
   constructor: (@conditions) -> null
   toString: -> "WHERE #{@conditions}"
