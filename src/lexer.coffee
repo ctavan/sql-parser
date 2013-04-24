@@ -63,6 +63,7 @@ class Lexer
     @tokenizeFromWord('WHERE') or
     @tokenizeFromWord('GROUP') or
     @tokenizeFromWord('ORDER') or
+    @tokenizeFromWord('PARTITION') or
     @tokenizeFromWord('BY') or
     @tokenizeFromWord('HAVING') or
     @tokenizeFromWord('LIMIT') or
@@ -124,7 +125,7 @@ class Lexer
     str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 
   SQL_KEYWORDS        = ['SELECT', 'FROM', 'WHERE', 'GROUP BY', 'ORDER BY', 'HAVING', 'AS']
-  SQL_FUNCTIONS       = ['AVG', 'COUNT', 'MIN', 'MAX', 'SUM']
+  SQL_FUNCTIONS       = ['AVG', 'COUNT', 'MIN', 'MAX', 'RANK', 'SUM']
   SQL_SORT_ORDERS     = ['ASC', 'DESC']
   SQL_NULLS           = ['NULLS FIRST', 'NULLS LAST']
   SQL_OPERATORS       = ['=', '>=', '>', '<=', '<', '<>', '!=', '&&', '||', 'LIKE', 'IS NOT', 'IS']

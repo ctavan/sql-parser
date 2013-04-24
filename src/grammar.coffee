@@ -118,8 +118,8 @@ grammar =
   ]
 
   OrderArg: [
-    o 'Value',                                            -> new OrderArgument($1, 'ASC')
-    o 'Value DIRECTION',                                  -> new OrderArgument($1, $2)
+    o 'Field',                                            -> new OrderArgument($1, 'ASC')
+    o 'Field DIRECTION',                                  -> new OrderArgument($1, $2)
     o 'OrderArg NULLS',                                   -> $1.nulls = $2.replace(/^NULLS /, ''); $1
   ]
 
@@ -136,6 +136,14 @@ grammar =
     o 'HAVING Expression',                                -> new Having($2)
   ]
 
+  PartitionClause: [
+      o 'PartitionBasicClause'
+      o 'PartitionBasicClause OrderClause',               -> $1.order = $2; $1
+    ]
+
+  PartitionBasicClause: [
+    o 'PARTITION BY ArgumentList',                        -> new Partition($3)
+  ]
 
   Expression: [
     o 'LEFT_PAREN Expression RIGHT_PAREN',                -> $2
@@ -166,7 +174,7 @@ grammar =
   ]
 
   Boolean: [
-    o 'BOOLEAN',                                           -> new BooleanValue($1)
+    o 'BOOLEAN',                                          -> new BooleanValue($1)
   ]
 
   String: [
@@ -186,10 +194,11 @@ grammar =
 
   Over: [
     o "OVER LEFT_PAREN ArgumentList RIGHT_PAREN",         -> new FunctionValue($1, $3)
+    o "OVER LEFT_PAREN PartitionClause RIGHT_PAREN",      -> new FunctionValue($1, [$3])
   ]
 
   UserFunction: [
-    o "LITERAL LEFT_PAREN ArgumentList RIGHT_PAREN",     -> new FunctionValue($1, $3, true)
+    o "LITERAL LEFT_PAREN ArgumentList RIGHT_PAREN",      -> new FunctionValue($1, $3, true)
   ]
 
   ArgumentList: [
