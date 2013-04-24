@@ -22,6 +22,7 @@ grammar =
 
   SelectQuery: [
     o "SelectWithLimitQuery"
+    o "SelectWithOffsetQuery"
     o "BasicSelectQuery"
   ]
 
@@ -36,6 +37,10 @@ grammar =
     o 'SelectQuery LimitClause',                          -> $1.limit = $2; $1
   ]
 
+  SelectWithOffsetQuery: [
+    o 'SelectQuery OffsetClause',                         -> $1.offset = $2; $1
+  ]
+
   Select: [
     o 'SelectClause'
     o 'SelectClause WhereClause',                         -> $1.where = $2; $1
@@ -46,9 +51,17 @@ grammar =
     o 'SELECT DISTINCT Fields FROM Table',                -> new Select($3, $5, true)
     o 'SELECT Fields FROM Table Joins',                   -> new Select($2, $4, false, $5)
     o 'SELECT DISTINCT Fields FROM Table Joins',          -> new Select($3, $5, true, $6)
+
+    o 'SELECT DISTINCT ON LEFT_PAREN Fields RIGHT_PAREN Fields FROM Table',       -> new Select($7, $9, $5)
+    o 'SELECT DISTINCT ON LEFT_PAREN Fields RIGHT_PAREN Fields FROM Table Joins', -> new Select($7, $9, $5, $10)
   ]
 
   Table: [
+    o 'TableReference',                                   -> new Field($1)
+    o 'TableReference AS Literal',                        -> new Field($1, $3)
+  ]
+
+  TableReference: [
     o 'Literal',                                          -> new Table($1)
     o 'LEFT_PAREN List RIGHT_PAREN',                      -> $2
     o 'LEFT_PAREN Query RIGHT_PAREN',                     -> new SubSelect($2)
@@ -76,6 +89,7 @@ grammar =
     o 'JOIN Table ON Expression',                         -> new Join($2, $4)
     o 'LEFT JOIN Table ON Expression',                    -> new Join($3, $5, 'LEFT')
     o 'RIGHT JOIN Table ON Expression',                   -> new Join($3, $5, 'RIGHT')
+    o 'INNER JOIN Table ON Expression',                   -> new Join($3, $5, null, 'INNER')
     o 'LEFT INNER JOIN Table ON Expression',              -> new Join($4, $6, 'LEFT', 'INNER')
     o 'RIGHT INNER JOIN Table ON Expression',             -> new Join($4, $6, 'RIGHT', 'INNER')
     o 'LEFT OUTER JOIN Table ON Expression',              -> new Join($4, $6, 'LEFT', 'OUTER')
@@ -90,6 +104,10 @@ grammar =
     o 'LIMIT Number',                                     -> new Limit($2)
   ]
 
+  OffsetClause: [
+    o 'OFFSET Number',                                    -> new Offset($2)
+  ]
+
   OrderClause: [
     o 'ORDER BY OrderArgs',                               -> new Order($3)
   ]
@@ -100,8 +118,9 @@ grammar =
   ]
 
   OrderArg: [
-    o 'Value',                                            -> new OrderArgument($1, 'ASC')
-    o 'Value DIRECTION',                                  -> new OrderArgument($1, $2)
+    o 'Field',                                            -> new OrderArgument($1, 'ASC')
+    o 'Field DIRECTION',                                  -> new OrderArgument($1, $2)
+    o 'OrderArg NULLS',                                   -> $1.nulls = $2.replace(/^NULLS /, ''); $1
   ]
 
   GroupClause: [
@@ -117,12 +136,21 @@ grammar =
     o 'HAVING Expression',                                -> new Having($2)
   ]
 
+  PartitionClause: [
+      o 'PartitionBasicClause'
+      o 'PartitionBasicClause OrderClause',               -> $1.order = $2; $1
+    ]
+
+  PartitionBasicClause: [
+    o 'PARTITION BY ArgumentList',                        -> new Partition($3)
+  ]
 
   Expression: [
     o 'LEFT_PAREN Expression RIGHT_PAREN',                -> $2
     o 'Expression MATH Expression',                       -> new Op($2, $1, $3)
     o 'Expression MATH_MULTI Expression',                 -> new Op($2, $1, $3)
     o 'Expression OPERATOR Expression',                   -> new Op($2, $1, $3)
+    o 'Expression OPERATOR ARRAY_OPERATOR Expression',    -> new Op($2, $1, new ArrayOp($3, $4))
     o 'Expression CONDITIONAL Expression',                -> new Op($2, $1, $3)
     o 'Value IN Table',                                   -> new Op($2, $1, $3)
     o 'Value'
@@ -146,7 +174,7 @@ grammar =
   ]
 
   Boolean: [
-    o 'BOOLEAN',                                           -> new BooleanValue($1)
+    o 'BOOLEAN',                                          -> new BooleanValue($1)
   ]
 
   String: [
@@ -161,14 +189,21 @@ grammar =
 
   Function: [
     o "FUNCTION LEFT_PAREN ArgumentList RIGHT_PAREN",     -> new FunctionValue($1, $3)
+    o "Function Over",                                    -> $1.over = $2; $1
+  ]
+
+  Over: [
+    o "OVER LEFT_PAREN ArgumentList RIGHT_PAREN",         -> new FunctionValue($1, $3)
+    o "OVER LEFT_PAREN PartitionClause RIGHT_PAREN",      -> new FunctionValue($1, [$3])
   ]
 
   UserFunction: [
-    o "LITERAL LEFT_PAREN ArgumentList RIGHT_PAREN",     -> new FunctionValue($1, $3, true)
+    o "LITERAL LEFT_PAREN ArgumentList RIGHT_PAREN",      -> new FunctionValue($1, $3, true)
   ]
 
   ArgumentList: [
-    o 'Expression',                                       -> [$1]
+    o '',                                                 -> []
+    o 'Field',                                            -> [$1]
     o 'ArgumentList SEPARATOR Value',                     -> $1.concat($3)
   ]
 

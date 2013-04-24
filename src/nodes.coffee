@@ -7,14 +7,19 @@ exports.Select = class Select
       @group = null
       @where = null
       @limit = null
+      @offset = null
     toString: ->
-      ret = ["SELECT #{@fields.join(', ')}"]
+      select = ["SELECT"]
+      if @distinct == true then select.push "DISTINCT"
+      else if @distinct then select.push "DISTINCT ON (#{@distinct.join(', ')})"
+      ret = ["#{select.join(' ')} #{@fields.join(', ')}"]
       ret.push indent("FROM #{@source}")
       ret.push indent(join.toString()) for join in @joins
       ret.push indent(@where.toString()) if @where
       ret.push indent(@group.toString()) if @group
       ret.push indent(@order.toString()) if @order
       ret.push indent(@limit.toString()) if @limit
+      ret.push indent(@offset.toString()) if @offset
       ret.push union.toString() for union in @unions
       ret.join("\n")
 
@@ -50,7 +55,7 @@ exports.LiteralValue = class LiteralValue
     else
       @nested = false
       @values = [@value]
-  toString: -> "`#{@values.join('.')}`"
+  toString: -> "#{@values.join('.')}"
 
 exports.StringValue = class StringValue
   constructor: (@value, @quoteType="''") -> null
@@ -76,20 +81,32 @@ exports.BooleanValue = class LiteralValue
   toString: -> if @value? then @value.toString().toUpperCase() else 'NULL'
 
 exports.FunctionValue = class FunctionValue
-  constructor: (@name, @arguments=[], @udf=false) -> null
-  toString: -> "#{@name}(#{@arguments.join(', ')})"
+  constructor: (@name, @arguments=[], @udf=false, @over=null) -> null
+  toString: ->
+    if @over
+      "#{@name}(#{@arguments.join(', ')}) #{@over}"
+    else
+      "#{@name}(#{@arguments.join(', ')})"
 
 exports.Order = class Order
   constructor: (@orderings) ->
   toString: -> "ORDER BY #{@orderings.join(', ')}"
 
 exports.OrderArgument = class OrderArgument
-  constructor: (@value, @direction='ASC') -> null
-  toString: -> "#{@value} #{@direction}"
+  constructor: (@value, @direction='ASC', @nulls=null) -> null
+  toString: ->
+    ret = "#{@value} #{@direction}"
+    if @nulls
+      ret += " NULLS #{@nulls}"
+    ret
 
 exports.Limit = class Limit
   constructor: (@value) -> null
   toString: -> "LIMIT #{@value}"
+
+exports.Offset = class Offset
+  constructor: (@value) -> null
+  toString: -> "OFFSET #{@value}"
 
 exports.Table = class Table
   constructor: (@name, @win=null, @winFn=null, @winArg=null) -> null
@@ -107,6 +124,14 @@ exports.Group = class Group
     ret.push @having.toString() if @having
     ret.join("\n")
 
+exports.Partition = class Partition
+  constructor: (@fields, @order=null) -> null
+  toString: ->
+    ret = "PARTITION BY #{@fields.join(', ')}"
+    if @order
+      ret += " #{@order}"
+    ret
+
 exports.Where = class Where
   constructor: (@conditions) -> null
   toString: -> "WHERE #{@conditions}"
@@ -118,6 +143,10 @@ exports.Having = class Having
 exports.Op = class Op
   constructor: (@operation, @left, @right) -> null
   toString: -> "(#{@left} #{@operation.toUpperCase()} #{@right})"
+
+exports.ArrayOp = class ArrayOp
+  constructor: (@operation, @right) -> null
+  toString: -> "#{@operation.toUpperCase()} (#{@right})"
 
 exports.Field = class Field
   constructor: (@field, @name=null) -> null

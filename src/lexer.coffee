@@ -12,12 +12,14 @@ class Lexer
                        @functionToken() or
                        @windowExtension() or
                        @sortOrderToken() or
+                       @nullsToken() or
                        @seperatorToken() or
                        @operatorToken() or
                        @mathToken() or
                        @dotToken() or
                        @conditionalToken() or
                        @inToken() or
+                       @arrayOperatorToken() or
                        @numberToken() or
                        @stringToken() or
                        @parensToken() or
@@ -61,9 +63,11 @@ class Lexer
     @tokenizeFromWord('WHERE') or
     @tokenizeFromWord('GROUP') or
     @tokenizeFromWord('ORDER') or
+    @tokenizeFromWord('PARTITION') or
     @tokenizeFromWord('BY') or
     @tokenizeFromWord('HAVING') or
     @tokenizeFromWord('LIMIT') or
+    @tokenizeFromWord('OFFSET') or
     @tokenizeFromWord('JOIN') or
     @tokenizeFromWord('LEFT') or
     @tokenizeFromWord('RIGHT') or
@@ -72,6 +76,7 @@ class Lexer
     @tokenizeFromWord('ON') or
     @tokenizeFromWord('AS') or
     @tokenizeFromWord('UNION') or
+    @tokenizeFromWord('OVER') or
     @tokenizeFromWord('ALL')
 
   dotToken: -> @tokenizeFromWord('DOT', '.')
@@ -81,8 +86,11 @@ class Lexer
     @tokenizeFromList('MATH_MULTI', MATH_MULTI)
   conditionalToken: -> @tokenizeFromList('CONDITIONAL', SQL_CONDITIONALS)
   inToken:          -> @tokenizeFromList('IN', SQL_IN)
+  arrayOperatorToken: ->
+    @tokenizeFromList('ARRAY_OPERATOR', SQL_ARRAY_OPERATORS)
   functionToken:    -> @tokenizeFromList('FUNCTION', SQL_FUNCTIONS)
   sortOrderToken:   -> @tokenizeFromList('DIRECTION', SQL_SORT_ORDERS)
+  nullsToken:       -> @tokenizeFromList('NULLS', SQL_NULLS)
   booleanToken:     -> @tokenizeFromList('BOOLEAN', BOOLEAN)
 
   starToken:        -> @tokenizeFromRegex('STAR', STAR)
@@ -117,10 +125,12 @@ class Lexer
     str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 
   SQL_KEYWORDS        = ['SELECT', 'FROM', 'WHERE', 'GROUP BY', 'ORDER BY', 'HAVING', 'AS']
-  SQL_FUNCTIONS       = ['AVG', 'COUNT', 'MIN', 'MAX', 'SUM']
+  SQL_FUNCTIONS       = ['AVG', 'COUNT', 'MIN', 'MAX', 'RANK', 'SUM']
   SQL_SORT_ORDERS     = ['ASC', 'DESC']
-  SQL_OPERATORS       = ['=', '>', '<', 'LIKE', 'IS NOT', 'IS']
-  SQL_IN              = ['IN']
+  SQL_NULLS           = ['NULLS FIRST', 'NULLS LAST']
+  SQL_OPERATORS       = ['=', '>=', '>', '<=', '<', '<>', '!=', '&&', '||', 'LIKE', 'IS NOT', 'IS']
+  SQL_IN              = ['IN', 'NOT IN']
+  SQL_ARRAY_OPERATORS = ['ANY', 'ALL']
   SQL_CONDITIONALS    = ['AND', 'OR']
   BOOLEAN             = ['TRUE', 'FALSE', 'NULL']
   MATH                = ['+', '-']
